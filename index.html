@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Deep Nested Table Structure</title>
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --secondary-color: #ff6b6b;
+            --accent-color: #6bff9e;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+            --bg-light: #ffffff;
+            --bg-dark: #121212;
+            --table-border-light: #dee2e6;
+            --table-border-dark: #495057;
+            --table-header-light: #e9ecef;
+            --table-header-dark: #343a40;
+            --table-row-even-light: #f8f9fa;
+            --table-row-even-dark: #2d3339;
+            --nested-level1-light: #e0f7fa;
+            --nested-level1-dark: #263238;
+            --nested-level2-light: #e8f5e9;
+            --nested-level2-dark: #1b2a20;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        body.dark {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-3px);
+            background-color: #3a5bef;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            animation: fadeInDown 1s ease-out;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .dark table {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        table:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--table-border-light);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .dark th,
+        .dark td {
+            border-color: var(--table-border-dark);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9em;
+        }
+
+        tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--table-row-even-light);
+        }
+
+        .dark tbody tr:nth-child(even) {
+            background-color: var(--table-row-even-dark);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(74, 107, 255, 0.1);
+        }
+
+        .dark tbody tr:hover {
+            background-color: rgba(74, 107, 255, 0.2);
+        }
+
+        .nested-table {
+            width: 100%;
+            margin: 0;
+            box-shadow: none;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .nested-table th {
+            background-color: var(--secondary-color);
+        }
+
+        .deep-nested-table {
+            width: 100%;
+            margin: 0;
+            box-shadow: none;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .deep-nested-table th {
+            background-color: var(--accent-color);
+            color: var(--text-dark);
+        }
+
+        caption {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            text-align: left;
+            padding: 5px 0;
+            animation: fadeInRight 0.8s ease-out;
+        }
+
+        .dark caption {
+            color: var(--secondary-color);
+        }
+
+        tfoot {
+            font-weight: bold;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Status indicators */
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active,
+        .status-in-progress {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .status-completed {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .status-planning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Row animations on hover */
+        tbody tr {
+            transition: transform 0.3s ease;
+        }
+
+        tbody tr:hover {
+            transform: translateX(5px);
+        }
+
+        /* Cell highlight animation */
+        td:hover,
+        th:hover {
+            animation: highlight 0.5s ease-out;
+        }
+
+        @keyframes highlight {
+            0% {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" onclick="document.body.classList.toggle('dark')">Toggle Dark Mode</button>
+
+    <h1>Enhanced Deep Nested Table</h1>
+
+    <table>
+        <caption>Main Table: Company Departments</caption>
+        <thead>
+            <tr>
+                <th>Department</th>
+                <th>Manager</th>
+                <th>Teams</th>
+                <th>Budget</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Engineering</td>
+                <td>John Smith</td>
+                <td>
+                    <!-- First level nested table -->
+                    <table class="nested-table">
+                        <caption>Engineering Teams</caption>
+                        <thead>
+                            <tr>
+                                <th>Team Name</th>
+                                <th>Team Lead</th>
+                                <th>Projects</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Frontend</td>
+                                <td>Sarah Johnson</td>
+                                <td>
+                                    <!-- Second level nested table -->
+                                    <table class="deep-nested-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Project</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Website Redesign</td>
+                                                <td><span class="status status-in-progress">In Progress</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Mobile App UI</td>
+                                                <td><span class="status status-completed">Completed</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Backend</td>
+                                <td>Mike Chen</td>
+                                <td>
+                                    <!-- Second level nested table -->
+                                    <table class="deep-nested-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Project</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>API Development</td>
+                                                <td><span class="status status-in-progress">In Progress</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Database Migration</td>
+                                                <td><span class="status status-planning">Planning</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>$1,200,000</td>
+            </tr>
+            <tr>
+                <td>Marketing</td>
+                <td>Emily Davis</td>
+                <td>
+                    <!-- First level nested table -->
+                    <table class="nested-table">
+                        <caption>Marketing Teams</caption>
+                        <thead>
+                            <tr>
+                                <th>Team Name</th>
+                                <th>Team Lead</th>
+                                <th>Campaigns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Digital</td>
+                                <td>Alex Wong</td>
+                                <td>
+                                    <!-- Second level nested table -->
+                                    <table class="deep-nested-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Campaign</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Social Media</td>
+                                                <td><span class="status status-active">Active</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Email Marketing</td>
+                                                <td><span class="status status-planning">Planning</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Content</td>
+                                <td>Lisa Park</td>
+                                <td>
+                                    <!-- Second level nested table -->
+                                    <table class="deep-nested-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Campaign</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Blog Series</td>
+                                                <td><span class="status status-in-progress">In Progress</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Video Production</td>
+                                                <td><span class="status status-completed">Completed</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>$850,000</td>
+            </tr>
+            <tr>
+                <td>Sales</td>
+                <td>Robert Taylor</td>
+                <td>
+                    <!-- First level nested table -->
+                    <table class="nested-table">
+                        <caption>Sales Teams</caption>
+                        <thead>
+                            <tr>
+                                <th>Region</th>
+                                <th>Team Lead</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>North America</td>
+                                <td>James Wilson</td>
+                                <td>
+                                    <!-- Second level nested table -->
+                                    <table class="deep-nested-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Quarter</th>
+                                                <th>Revenue</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Q1</td>
+                                                <td>$450,000</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Q2</td>
+                                                <td>$520,000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Europe</td>
+                                <td>Sophie Martin</td>
+                                <td>
+                                    <!-- Second level nested table -->
+                                    <table class="deep-nested-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Quarter</th>
+                                                <th>Revenue</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Q1</td>
+                                                <td>$380,000</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Q2</td>
+                                                <td>$410,000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>$1,500,000</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Total Budget</td>
+                <td>$3,550,000</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        // Add animation classes to rows with a delay for staggered effect
+        document.addEventListener('DOMContentLoaded', function () {
+            const tables = document.querySelectorAll('table');
+
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach((row, index) => {
+                    setTimeout(() => {
+                        row.style.opacity = '0';
+                        row.style.animation = `fadeIn 0.5s ease-out forwards`;
+                    }, index * 100);
+                });
+            });
+
+            // Add hover effect for cells
+            const cells = document.querySelectorAll('td, th');
+            cells.forEach(cell => {
+                cell.addEventListener('mouseenter', function () {
+                    this.style.transition = 'background-color 0.3s ease';
+                    if (!this.classList.contains('status')) {
+                        this.style.backgroundColor = 'rgba(74, 107, 255, 0.1)';
+                    }
+                });
+
+                cell.addEventListener('mouseleave', function () {
+                    if (!this.classList.contains('status')) {
+                        this.style.backgroundColor = '';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
